@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOPWATCH</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stopwatch">
+    <h1 style="color: white;" id="displayTime">00:00:00</h1>
+    <div class="stopped-value" id="stoppedValueDisplay"></div>
+    <div class="buttons">
+        <img src="images/stop.png" onclick="watchStop()">
+        <img src="images/start.png" onclick="watchStart()">
+        <img src="images/reset.png" onclick="watchReset()">
+        <img src="images/store.jpeg" onclick="storeTime()">
+    </div>
+    <div class="stored-time" style="position: absolute; top: 10px; right: 10px; color: white;">
+        Stored Time: <span id="storedTimeDisplay">00:00:00</span>
+    </div>
+  </div>  
+  <!--<script type="text/javascript" src="timer.js"></script>-->
+  <script>
+    let [seconds, minutes, hours] = [0, 0, 0];
+    let displayTime = document.getElementById("displayTime");
+    let stoppedValueDisplay = document.getElementById("stoppedValueDisplay");
+    let storedTimeDisplay = document.getElementById("storedTimeDisplay");
+    let timer = null;
+    let storedValues = null;
+
+    function stopwatch() {
+        seconds++;
+        if (seconds == 60) {
+            seconds = 0;
+            minutes++;
+            if (minutes == 60) {
+                minutes = 0;
+                hours++;
+            }
+        }
+
+        let h = hours < 10 ? "0" + hours : hours;
+        let m = minutes < 10 ? "0" + minutes : minutes;
+        let s = seconds < 10 ? "0" + seconds : seconds;
+
+        displayTime.innerHTML = h + ":" + m + ":" + s;
+    }
+
+    function storeTime() {
+        storedValues = {
+            hours: hours,
+            minutes: minutes,
+            seconds: seconds
+        };
+        updateStoredTimeDisplay();
+    }
+
+    function updateStoredTimeDisplay() {
+        if (storedValues !== null) {
+            let h = storedValues.hours < 10 ? "0" + storedValues.hours : storedValues.hours;
+            let m = storedValues.minutes < 10 ? "0" + storedValues.minutes : storedValues.minutes;
+            let s = storedValues.seconds < 10 ? "0" + storedValues.seconds : storedValues.seconds;
+
+            storedTimeDisplay.innerHTML = h + ":" + m + ":" + s;
+        }
+    }
+
+    function watchStart() {
+        if (timer !== null) {
+            clearInterval(timer);
+        }
+        if (storedValues !== null) {
+            hours = storedValues.hours;
+            minutes = storedValues.minutes;
+            seconds = storedValues.seconds;
+            storedValues = null;
+            updateStoredTimeDisplay();
+        }
+
+        timer = setInterval(stopwatch, 1000);
+    }
+
+    function watchStop() {
+        clearInterval(timer);
+        clearInterval(timer);
+        displayStoppedValue();
+    }
+
+    function watchReset() {
+        clearInterval(timer);
+        [seconds, minutes, hours] = [0, 0, 0];
+        displayTime.innerHTML = "00:00:00";
+        stoppedValueDisplay.innerHTML = "";
+    }
+
+    function displayStoppedValue() {
+        if (storedValues !== null) {
+            let h = storedValues.hours < 10 ? "0" + storedValues.hours : storedValues.hours;
+            let m = storedValues.minutes < 10 ? "0" + storedValues.minutes : storedValues.minutes;
+            let s = storedValues.seconds < 10 ? "0" + storedValues.seconds : storedValues.seconds;
+
+            stoppedValueDisplay.innerHTML = "Stopped Time: " + h + ":" + m + ":" + s;
+        }
+    }
+  </script>
+</body>
+</html>
