@@ -1,0 +1,33 @@
+name: Test Pipeline
+
+on: [push, workflow_dispatch]
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    env:
+      successCase: "true"  # Change to "false" for failure scenario
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Test
+        run: |
+          if [[ "$successCase" == "true" ]]; then
+            echo "Pipeline Successful"
+            echo "success" > result.txt
+          else
+            echo "Pipeline Failed" && exit 1
+          fi
+
+      - name: Send Email on Success
+        if: success()
+        run: |
+          echo "Sending success email..."
+          curl -X POST -H "Content-Type: application/json" -d '{"to": "sumitrsch@gmail.com", "subject": "Pipeline Success", "body": "Success case triggered."}' https://api.your-email-service.com/send
+
+      - name: Send Email on Failure
+        if: failure()
+        run: |
+          echo "Sending failure email..."
+          curl -X POST -H "Content-Type: application/json" -d '{"to": "sumittemp1@gmail.com", "subject": "Pipeline Failed", "body": "Failure case triggered."}' https://api.your-email-service.com/send
